@@ -1,9 +1,15 @@
 
 terraform {
+  required_version = "1.9.8"
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "3.65"
+      version = "5.75.1"
+    }
+    google = {
+      source  = "hashicorp/google"
+      version = "6.11.1"
     }
     trocco = {
       source = "registry.terraform.io/trocco-io/trocco"
@@ -12,15 +18,9 @@ terraform {
 }
 
 provider "aws" {
-  region = local.customer.aws_region
+  region = "ap-northeast-1"
 }
 
 provider "google" {
-  project = local.customer.gcp_project
-  region  = local.customer.gcp_region
-}
-
-provider "trocco" {
-  api_key = var.trocco_api_key
-  region  = "japan"
+  project = "pn-playground"
 }
