@@ -14,19 +14,18 @@ module "kono_test" {
   create_bq_dataset = true
   dataset_id        = "stg_kono_playground"
 
-  create_bq_table = true
-  table_id        = "stg_covid19_italy_by_province"
+  create_bq_table                       = true
+  table_id                              = "stg_covid19_italy_by_province"
+  is_delete_contents_on_dataset_destroy = true
+  is_table_deletion_protection_enabled  = false
 
   # dts設定
   entity_name           = "covid19_italy"
   service_account_email = module.iam.dts_service_account_email
 
-  dts_params = {
-    destination_table_name_template = "stg_covid19_italy_by_province"
-    data_path_template              = "gs://kono_playground/terraform_playground/covid19_intaly_by_province"
-    file_format                     = "CSV"
-    skip_leading_rows               = "1"
-  }
+  data_path_template = "gs://kono_playground/terraform_playground/covid19_intaly_by_province"
+  write_disposition  = "WRITE_TRUNCATE"
+
 
   bq_table_schema = [
     { name = "date", type = "TIMESTAMP", mode = "NULLABLE" },

@@ -4,6 +4,82 @@ variable "project_id" {
   type        = string
 }
 
+variable "project" {
+  description = "label"
+  type        = string
+  default     = ""
+}
+
+# DTS設定
+variable "entity_name" {
+  description = "sync target entity name"
+  type        = string
+  default     = "every 24 hours"
+}
+
+variable "schedule" {
+  description = "Schedule for the data transfer in cron format"
+  type        = string
+  default     = "every 24 hours"
+}
+
+variable "service_account_email" {
+  description = "ServiceAccount email responsible for this dts job"
+  type        = string
+  default     = ""
+}
+
+variable "skip_leading_rows" {
+  description = "skip row count when job start"
+  type        = number
+  default     = 1
+}
+
+variable "max_bad_records" {
+  description = "skip row count when job start"
+  type        = number
+  default     = 0
+}
+
+variable "file_format" {
+  description = "file_format of source file"
+  type        = string
+  default     = "CSV"
+}
+
+variable "write_disposition" {
+  description = "Specifies whether to overwrite or append data when loading into BigQuery."
+  type        = string
+  default     = "WRITE_APPEND"
+  validation {
+    condition     = contains(["WRITE_APPEND", "WRITE_TRUNCATE"], var.write_disposition)
+    error_message = "write_disposition must be either 'WRITE_APPEND' or 'WRITE_TRUNCATE'."
+  }
+}
+
+variable "data_path_template" {
+  description = "source path"
+  type        = string
+}
+
+variable "ignore_unknown_values" {
+  description = "whether to ignore error caused by unkown column in source"
+  type        = bool
+  default     = false
+}
+
+variable "allow_quoted_newlines" {
+  description = "whether to allow quoted new lines in csv"
+  type        = bool
+  default     = true
+}
+
+variable "allow_jagged_rows" {
+  description = "whether to ignore error caused by redundant column in source"
+  type        = bool
+  default     = false
+}
+
 # BigQuery設定
 
 variable "create_bq_dataset" {
@@ -28,40 +104,18 @@ variable "table_id" {
   type        = string
 }
 
-
-# DTS設定
-variable "entity_name" {
-  description = "sync target entity name"
-  type        = string
-  default     = "every 24 hours"
+variable "is_delete_contents_on_dataset_destroy" {
+  description = "Whether to delete all tables in the dataset when destroying"
+  type        = bool
+  default     = false
 }
 
-variable "schedule" {
-  description = "Schedule for the data transfer in cron format"
-  type        = string
-  default     = "every 24 hours"
+variable "is_table_deletion_protection_enabled" {
+  description = "Whether to enable protection upon deleting instruction"
+  type        = bool
+  default     = true
 }
 
-variable "service_account_email" {
-  description = "ServiceAccount email responsible for this dts job"
-  type        = string
-  default     = ""
-}
-
-# DTSのparamsをmap型で定義
-variable "dts_params" {
-  description = "Parameters for BigQuery Data Transfer Service"
-  type        = map(string)
-  default = {
-    write_disposition               = "WRITE_APPEND"
-    destination_table_name_template = "your_table"
-    data_path_template              = "gs://your_bucket/your_data_path"
-    file_format                     = "CSV"
-    skip_leading_rows               = "1"
-  }
-}
-
-# BigQueryテーブルのスキーマをリストのマップで定義
 variable "bq_table_schema" {
   description = "Schema for the BigQuery table as a list of maps"
   type = list(
